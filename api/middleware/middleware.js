@@ -1,20 +1,18 @@
 const Project = require("../projects/projects-model");
 const Action = require("../actions/actions-model");
 
-function validateProjectId(req, res, next) {
-  Project.get(req.params.id)
-    .then((project) => {
-      if (project) {
-        req.project = project;
-        next();
-      } else {
-        res.status(404).json({ message: "invalid project id" });
-      }
-    })
-    .catch((error) => {
-      console.log(error.message);
-      res.status(500).json({ message: "Error retrieving project" });
-    });
+async function validateProjectId(req, res, next) {
+  try {
+    const project = await Project.findById(req.params.id);
+    if (project) {
+      req.project = project;
+      next();
+    } else {
+      res.status(404).json(`project with id ${id} not found`);
+    }
+  } catch (err) {
+    res.status(500).json("ouch");
+  }
 }
 
 function validateProject(req, res, next) {
@@ -25,20 +23,18 @@ function validateProject(req, res, next) {
   }
 }
 
-function validateActionId(req, res, next) {
-  Action.get(req.params.id)
-    .then((action) => {
-      if (action) {
-        req.action = action;
-        next();
-      } else {
-        res.status(404).json({ message: "invalid action id" });
-      }
-    })
-    .catch((error) => {
-      console.log(error.message);
-      req.status(500).json({ message: "Error retrieving action" });
-    });
+async function validateActionId(req, res, next) {
+  try {
+    const action = await Action.findById(req.params.id);
+    if (action) {
+      req.action = action;
+      next();
+    } else {
+      res.status(404).json(`action with id ${id} not found`);
+    }
+  } catch (err) {
+    res.status(500).json("ouch");
+  }
 }
 
 function validateAction(req, res, next) {
