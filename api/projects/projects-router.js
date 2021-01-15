@@ -3,11 +3,15 @@ const router = express.Router();
 
 const Project = require("./projects-model");
 
+const {
+  validateProject,
+  validateProjectId,
+} = require("../middleware/middleware");
+
 router.get("/", (req, res) => {
-  Project.get()
-    .then((projects) => {
-      console.log(projects);
-      res.status(200).json(projects);
+  Project.get(req.query)
+    .then((project) => {
+      res.json(project);
     })
     .catch((error) => {
       console.log(error.message);
@@ -64,31 +68,5 @@ router.delete("/:id", validateProjectId, (req, res) => {
       res.status(500).json({ message: "Error removing project" });
     });
 });
-
-// Middleware
-
-function validateProjectId(req, res, next) {
-  Project.get(req.params.id)
-    .then((project) => {
-      if (project) {
-        req.project = project;
-        next();
-      } else {
-        res.status(404).json({ message: "invalid project id" });
-      }
-    })
-    .catch((error) => {
-      console.log(error.message);
-      res.status(500).json({ message: "Error retrieving project" });
-    });
-}
-
-function validateProject(req, res, next) {
-  if (!req.body.name || !req.body.description) {
-    res.status(400).json({ message: "Please provide name and description" });
-  } else {
-    next();
-  }
-}
 
 module.exports = router;

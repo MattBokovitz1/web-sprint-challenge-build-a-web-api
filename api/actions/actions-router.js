@@ -2,9 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 const Action = require("./actions-model");
+const {
+  validateAction,
+  validateActionId,
+} = require("../middleware/middleware");
 
 router.get("/", (req, res) => {
-  Action.get()
+  Action.get(req.query)
     .then((actions) => {
       res.status(200).json(actions);
     })
@@ -50,33 +54,5 @@ router.delete("/:id", validateActionId, (req, res) => {
       res.status(500).json({ message: "Error removing action" });
     });
 });
-
-// Middleware
-
-function validateActionId(req, res, next) {
-  Action.get(req.params.id)
-    .then((action) => {
-      if (action) {
-        req.action = action;
-        next();
-      } else {
-        res.status(404).json({ message: "invalid action id" });
-      }
-    })
-    .catch((error) => {
-      console.log(error.message);
-      req.status(500).json({ message: "Error retrieving action" });
-    });
-}
-
-function validateAction(req, res, next) {
-  if (!req.body.description || !req.body.project_id || !req.body.notes) {
-    res
-      .status(400)
-      .json({ message: "Please provide description, project id, and notes" });
-  } else {
-    next();
-  }
-}
 
 module.exports = router;
