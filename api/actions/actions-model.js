@@ -1,19 +1,20 @@
-const db = require('../../data/dbConfig.js');
-const mappers = require('../../data/helpers/mappers');
+const db = require("../../data/dbConfig.js");
+const mappers = require("../../data/helpers/mappers");
 
 module.exports = {
   get,
   insert,
   update,
   remove,
+  getById,
 };
 
 function get(id) {
-  let query = db('actions');
+  let query = db("actions");
 
   if (id) {
     return query
-      .where('id', id)
+      .where("id", id)
       .first()
       .then((action) => {
         if (action) {
@@ -30,18 +31,22 @@ function get(id) {
 }
 
 function insert(action) {
-  return db('actions')
-    .insert(action, 'id')
+  return db("actions")
+    .insert(action, "id")
     .then(([id]) => get(id));
 }
 
 function update(id, changes) {
-  return db('actions')
-    .where('id', id)
+  return db("actions")
+    .where("id", id)
     .update(changes)
     .then((count) => (count > 0 ? get(id) : null));
 }
 
 function remove(id) {
-  return db('actions').where('id', id).del();
+  return db("actions").where("id", id).del();
+}
+
+function getById(id) {
+  return db("actions").where({ id }).first();
 }
